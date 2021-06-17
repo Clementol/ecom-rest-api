@@ -1,9 +1,9 @@
 const express = require('express');
 const { createPage, getPage } = require('../../controller/admin/page');
-const {upload, requireSignIn, adminMiddleware} = require('../../middleware');
+const {uploadToS3, requireSignIn, adminMiddleware} = require('../../middleware');
 const router = express.Router();
 
-router.post('/page/create', requireSignIn, adminMiddleware, upload.fields([
+router.post('/page/create', requireSignIn, adminMiddleware, uploadToS3.fields([
     {name: "banners"},
     {name: "products"}
 ]), createPage)
