@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const path = require("path");
-const { requireSignIn, adminMiddleware } = require("../middleware");
+const { requireSignIn, adminMiddleware, uploadToS3 } = require("../middleware");
 const {
   createProduct,
   getProductsBySlug,
@@ -28,7 +28,7 @@ router.post(
   "/product/create",
   requireSignIn,
   adminMiddleware,
-  upload.array("productPicture"),
+  uploadToS3.array("productPicture"),
   createProduct
 );
 

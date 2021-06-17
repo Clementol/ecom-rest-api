@@ -12,7 +12,7 @@ exports.createProduct = (req, res) => {
     let productPictures;
     if (req.files.length > 0) {
       productPictures = req.files.map((file) => {
-        return { image: file.filename };
+        return { image: file.location };
       });
     }
     const newProduct = new Product({
@@ -30,7 +30,7 @@ exports.createProduct = (req, res) => {
       .save()
       .then((product) => {
         if (product) {
-          res.status(200).send(JSON.stringify(product));
+          res.status(200).json({product, files: req.files});
         }
       })
       .catch((err) => {

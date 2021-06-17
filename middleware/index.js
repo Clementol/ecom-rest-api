@@ -1,21 +1,42 @@
 const jwt = require('jsonwebtoken');
 const path = require('path')
 const multer = require('multer');
+const multerS3 = require('multer-s3')
+const aws = require('aws-sdk')
 
 const jwtSecret = process.env.jwtSecret
 
 const shortid = require("shortid");
 
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, path.join(path.dirname(__dirname), "uploads"));
-  },
-  filename: function(req, file, cb) {
-    cb(null, shortid.generate() + "-" + Date.now() + "-" + file.originalname);
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: function(req, file, cb) {
+//     cb(null, path.join(path.dirname(__dirname), "uploads"));
+//   },
+//   filename: function(req, file, cb) {
+//     cb(null, shortid.generate() + "-" + Date.now() + "-" + file.originalname);
+//   }
+// });
 
-exports.upload = multer({ storage: storage });
+// exports.upload = multer({ storage: storage });
+let s3 = new aws.S3({
+   accessKeyId: 'AKIA2N7JLJPJHQFJ46JV',
+   secretAccessKey: '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',
+   region: "us-west-1"
+})
+s3.config.update
+exports.uploadToS3 = multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: 'ecom-app',
+      acl: 'public-read',
+      metadata: function (req, file, cb) {
+        cb(null, {fieldName: file.fieldname});
+      },
+      key: function (req, file, cb) {
+        cb(null, shortid.generate() + "-" + Date.now() + "-" + file.originalname)
+      }
+    })
+  })
 
 exports.requireSignIn = (req, res, next) => {
     const token = req.headers['x-auth-token'];
